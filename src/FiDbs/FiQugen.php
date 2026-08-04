@@ -1,0 +1,87 @@
+<?php
+
+namespace Engtuncay\Phputils8\FiDbs;
+
+use Engtuncay\Phputils8\FiCores\FiStrbui;
+use Engtuncay\Phputils8\FiApps\FiAppConfig;
+use Engtuncay\Phputils8\FiCols\AbsFkbTable;
+use Engtuncay\Phputils8\FiCols\FimColType;
+use Engtuncay\Phputils8\FiCores\FiString;
+use Engtuncay\Phputils8\FiDtos\Fkb;
+use Engtuncay\Phputils8\FiDtos\FkbList;
+use Engtuncay\Phputils8\FiMetas\FimFcFields;
+use Engtuncay\Phputils8\FiMetas\FimFiCol;
+use Engtuncay\Phputils8\FiMetas\FimOksFieldType;
+
+/**
+ * FiQuery Generator
+ */
+class FiQugen
+{
+
+  public static function sqlAlterFields(FkbList $fkbFields, array $fdrFields): string
+  {
+    $sbSql = new FiStrbui();
+
+    $arrFieldId = [];
+
+    foreach ($fdrFields as $refFields) {
+      $arrFieldId[] = $refFields['Field'];
+    }
+
+    //$debugMessage = 'Log from FiQugen - Mevcut alanlar: ' . print_r($arrFieldId, true);
+    //FiAppConfig::$fiLog->debug($debugMessage);
+
+    /** 
+     *  @var FkbList $fkbFields 
+     *  @var Fkb $fkb
+     */
+    foreach ($fkbFields as $fkb) {
+      if (!in_array($fkb->getFcTxFn(), $arrFieldId)) {
+        // Field needs to be added
+        $fieldType = $fkb->getValueByFiMeta(FimFiCol::fcTxFieldType());
+
+        $sbSql->append("ALTER TABLE payments_log ADD COLUMN {$fkb->getFcTxFn()} {$fieldType}");
+
+        if (
+          $fieldType == FimOksFieldType::varchar()->getTxKey()
+          || $fieldType == FimOksFieldType::string()->getTxKey()
+        ) {
+          $lnLength = $fkb->getValueByFiMeta(FimFiCol::fcLnLength());
+          if ($lnLength !== null) {
+            $sbSql->append("({$lnLength})");
+          } else {
+            // Varsayılan uzunluk eklenebilir
+            $sbSql->append("(50)");
+          }
+        }
+
+        $sbSql->append(";\n");
+        // Execute the SQL
+      }
+    }
+    return $sbSql->toString();
+  }
+
+  public static function sqSelAllLimit1(AbsFkbTable $absFkbTable): string
+  {
+    //
+    $sql = "SELECT * FROM " . $absFkbTable::sqTableName()->getFcTxHd() . " LIMIT 1";
+    return $sql;
+  }
+
+
+  public static function sqSelAllLimit2(Fkb $fkbEntity): string
+  {
+    //
+    // $fkbEntity->getFimValue()
+    $txTableName = $fkbEntity->getFimValue(FimFcFields::sqTableName());
+
+    if (FiString::isEmpty($txTableName)) {
+      return "";
+    }
+
+    $sql = "SELECT * FROM " . $txTableName . " LIMIT 1";
+    return $sql;
+  }
+}

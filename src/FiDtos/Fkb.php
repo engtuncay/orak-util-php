@@ -1,0 +1,383 @@
+<?php
+
+namespace Engtuncay\Phputils8\FiDtos;
+
+use ArrayIterator;
+use Engtuncay\Phputils8\FiCores\FiArray;
+use Engtuncay\Phputils8\FiCores\FiString;
+use Engtuncay\Phputils8\FiCols\FicValue;
+use Engtuncay\Phputils8\FiMetas\FimFiCol;
+use IteratorAggregate;
+use Traversable;
+
+/**
+ * Class which wraps an associative array for utility
+ */
+class Fkb implements IteratorAggregate
+{
+  /**
+   * fkb is used as array, so it initialized.
+   *
+   * @var array $params
+   */
+  public array $params;
+
+  /**
+   * @param array $params
+   */
+  public function __construct(?array $params = null)
+  {
+    $this->params = $params ?? [];
+  }
+
+
+  public static function bui(array $params = []): Fkb
+  {
+    return new Fkb($params);
+  }
+
+  public function put($key, $value)
+  {
+    $this->params[$key] = $value;
+  }
+
+  public function buiPut($key, $value): Fkb
+  {
+    $this->params[$key] = $value;
+    return $this;
+  }
+
+  public function add($key, $value)
+  {
+    $this->params[$key] = $value;
+  }
+
+  public function set($key, $value)
+  {
+    $this->add($key, $value);
+  }
+
+  public function addValue($value)
+  {
+    $this->params[] = $value;
+  }
+
+  /**
+   * Adds a field (FiCol->fcTxFieldName) to the Fkb.
+   *
+   * @param FiCol $fiCol
+   * @param mixed $value
+   * @return void
+   */
+  public function addField($fiCol, $value)
+  {
+    if (FiString::isEmpty($fiCol->fcTxFieldName)) {
+      return;
+    }
+    $this->params[$fiCol->fcTxFieldName] = $value;
+  }
+
+  /**
+   * Undocumented function
+   *
+   * @param Fkb $fkbCol
+   * @param mixed $value
+   * @return void
+   */
+  public function addFieldFkb($fkbCol, $value)
+  {
+    if ($fkbCol == null) return;
+
+    $txFieldName =  $fkbCol->getFimValue(FimFiCol::fcTxFieldName());
+
+    if (FiString::isEmpty($txFieldName)) return;
+
+    $this->params[$fkbCol->getFimValue(FimFiCol::fcTxFieldName())] = $value;
+  }
+
+  /**
+   * Deprecated, use addFieldByFim instead
+   *
+   * @param FiMeta $fiMeta
+   * @param mixed $value
+   * @return void
+   */
+  public function addFieldMeta($fiMeta, $value)
+  {
+    $this->addFieldByFim($fiMeta, $value);
+  }
+
+  /**
+   * 
+   *
+   * @param FiMeta $fiMeta
+   * @param mixed $value
+   * @return void
+   */
+  public function addFieldByFim($fiMeta, $value)
+  {
+    if (FiString::isEmpty($fiMeta->ftTxKey)) {
+      return;
+    }
+    $this->params[$fiMeta->ftTxKey] = $value;
+  }
+
+  public function addFm($fiMeta, $value)
+  {
+    $this->addFieldMeta($fiMeta, $value);
+  }
+
+  public function addFim($fiMeta, $value)
+  {
+    $this->addFieldByFim($fiMeta, $value);
+  }
+
+
+
+  /**
+   * FkbCol->fcTxFieldName is used as key
+   *
+   * @param Fkb $fkbCol
+   * @param mixed $value
+   * @return void
+   */
+  public function addFkbCol($fkbCol, $value)
+  {
+    if (FiString::isEmpty($fkbCol->getFimValue(FimFiCol::fcTxFieldName()))) {
+      return;
+    }
+    $this->params[$fkbCol->getFimValue(FimFiCol::fcTxFieldName())] = $value;
+  }
+
+  public function getArr(): array
+  {
+    return $this->params;
+  }
+
+  public function ToArr(): array
+  {
+    return $this->params;
+  }
+
+  public function getVal(): array
+  {
+    return $this->params;
+  }
+
+  public function toArray(): array
+  {
+    return $this->params;
+  }
+
+  public function getParams(): array
+  {
+    return $this->params;
+  }
+
+  public function getParamsNtn(): array
+  {
+    return $this->params ?? [];
+  }
+
+  public function setParams(array $params): void
+  {
+    $this->params = $params;
+  }
+
+  public function getValueByFiCol(FiCol $fiCol): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getValue($fiCol->fcTxFieldName);
+  }
+
+  /**
+   * deprecated getValueByFim kullanılacak
+   *
+   * @param FiMeta $fiMeta
+   * @return mixed
+   */
+  public function getValueByFiMeta(FiMeta $fiMeta): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getValue($fiMeta->ftTxKey);
+  }
+
+  public function getValueByFim(FiMeta $fiMeta): mixed
+  {
+    //FiLog::$log?->debug(json_encode($this->getArr()));
+    return $this->getValue($fiMeta->ftTxKey);
+  }
+
+  public function getValueByFimAsBool(FiMeta $fiMeta): mixed
+  {
+    //FiLog::$log?->debug(json_encode($this->getArr()));
+    return FicValue::toBool($this->getValue($fiMeta->ftTxKey, null));
+  }
+
+  public function getFimAsBool(FiMeta $fiMeta): mixed
+  {
+    //FiLog::$log?->debug(json_encode($this->getArr()));
+    return FicValue::toBool($this->getValue($fiMeta->ftTxKey, null));
+  }
+
+  /**
+   * shortcut method for getValueByFiMeta
+   *
+   * @param FiMeta $fiMeta
+   * @return mixed
+   */
+  public function getFimValue(FiMeta $fiMeta): mixed
+  {
+    return $this->getValueByFiMeta($fiMeta);
+  }
+
+  public function getValueByFkc(Fkb $fkcCol): mixed
+  {
+    return $this->getValue($fkcCol->getValueByFiMeta(FimFiCol::fcTxFieldName()));
+  }
+
+  public function getFkcVal(Fkb $fkcCol): mixed
+  {
+    return $this->getValueByFkc($fkcCol);
+  }
+
+  // Deprecated, use getFcTxFieldName() instead
+  public function getFcFieldName(): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getFimValue(FimFiCol::fcTxFieldName());
+  }
+
+  public function getFcTxFieldName(): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getFimValue(FimFiCol::fcTxFieldName());
+  }
+
+  public function getFcTxFn(): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getFimValue(FimFiCol::fcTxFieldName());
+  }
+
+  public function getFcFn(): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getFimValue(FimFiCol::fcTxFieldName());
+  }
+
+  public function getFcTxFnNtn(): string
+  {
+    $objValue = $this->getFimValue(FimFiCol::fcTxFieldName());
+    if ($objValue === null) return "";
+    return (string)$objValue;
+  }
+
+  public function getFcTxHd(): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getFimValue(FimFiCol::fcTxHeader());
+  }
+
+  public function getValue(string $txKey): mixed
+  {
+    // FiLog::$log?->debug( print_r($this->getArr(), true));
+    if (!FiArray::existKey($txKey, $this->getArr())) return null;
+    return $this->getArr()[$txKey];
+  }
+
+  public function get(string $txKey): mixed
+  {
+    return $this->getValue($txKey);
+  }
+
+  public function getIterator(): Traversable
+  {
+    return new ArrayIterator($this->params);
+  }
+
+  public function getValueAsBoolByFiCol(FiCol $fiCol): bool|null
+  {
+    if (!FiArray::existKeyByFiCol($fiCol, $this->getArr())) return null;
+    $txValue = $this->getArr()[$fiCol->fcTxFieldName];
+
+    //if (is_string($txValue)) {
+    return FicValue::toBool($txValue);
+  }
+
+  public function has(string $txKey = null): bool
+  {
+    if ($txKey == null) return false;
+    return array_key_exists($txKey, $this->getArr());
+  }
+
+  public function hasFim(FiMeta $fiMeta): bool
+  {
+    if ($fiMeta == null) return false;
+    return array_key_exists($fiMeta->getTxKey(), $this->getArr());
+  }
+
+  public function existKey(string $txKey = null): bool
+  {
+    return $this->has($txKey);
+  }
+
+  /**
+   * $mixkey FkbList olan bir anahtar olarak tanımlanarak, içine $fkbValue ekler
+   *
+   * @param mixed $mixKey
+   * @param Fkb $fkbValue
+   * @return void
+   */
+  public function putInFkbList($mixKey, Fkb $fkbValue)
+  {
+    if (!$this->existKey($mixKey)) {
+      $this->params[$mixKey] = new FkbList();
+    } else {
+      if (!($this->params[$mixKey] instanceof FkbList)) {
+        //throw new \InvalidArgumentException("The key '$mixKey' is not associated with a FkbList.");
+        return;
+      }
+    }
+
+    /** @var FkbList $fkbList */
+    $fkbList =  $this->params[$mixKey];
+
+    $fkbList->add($fkbValue);
+  }
+
+
+  public function count(): int
+  {
+    return count($this->params);
+  }
+
+  public function remove(string $txKey): void
+  {
+    if ($this->existKey($txKey)) {
+      unset($this->params[$txKey]);
+    }
+  }
+
+  /**
+   * $base ile başlayan bir alt yapıya sahip Fkb döner. 
+   * 
+   * Örneğin $base = ['Body', 'IntegrationLoginResponse'] ise, Body->IntegrationLoginResponse altındaki elemanları içeren yeni bir Fkb döner.
+   * 
+   * @param mixed ...$base 
+   * @return Fkb 
+   */
+  public function changeBase(string ...$base)
+  {
+    $arrayLast = $this->params;
+
+    foreach ($base as $item) {
+      if (array_key_exists($item, $arrayLast)) {
+        $arrayLast = $arrayLast[$item];
+        //EspLog::debug("changeBase - current base: " . $item);
+      }
+    }
+
+    return Fkb::bui($arrayLast);
+  }
+}
