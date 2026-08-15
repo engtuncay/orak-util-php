@@ -128,6 +128,14 @@ class FicFiCol implements IFiTableMeta
     return $fiCol;
   }
 
+  public static function fcLnId(): FiCol
+  {
+    $fiCol = new FiCol("fcLnId");
+    $fiCol->fcTxFieldType = 'int';
+
+    return $fiCol;
+  }
+
   public static function fcLnPrecision(): FiCol
   {
     $fiCol = new FiCol("fcLnPrecision");
