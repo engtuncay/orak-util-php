@@ -99,6 +99,8 @@ class FiCol
   // For Excel Reading, the field shows whether or not column exists in the excel
   public ?bool $boEnabled = null;
 
+  public ?Fkb $fkbExtra = null;
+
   // Reflection Field Alanlar
 
 
