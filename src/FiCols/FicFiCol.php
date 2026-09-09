@@ -160,6 +160,15 @@ class FicFiCol implements IFiTableMeta
     return $fiCol;
   }
 
+    public static function tfcBoDto(): FiCol
+  {
+    $fiCol = new FiCol("tfcBoDto");
+    $fiCol->fcTxFieldType = 'bool';
+
+    return $fiCol;
+  }
+
+
   public static function fcTxIdType(): FiCol
   {
     $fiCol = new FiCol("fcTxIdType");
