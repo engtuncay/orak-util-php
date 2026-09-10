@@ -79,9 +79,17 @@ class Fdr
     return $this->genFkbResponse();
   }
 
+  /**
+   * Http isteklerine Response ederken kullanılacak FkbResponse objesini oluşturur.
+   * 
+   * FkbResponse objesine dahil edilecek alanlar burada tespit edilir
+   * 
+   * @return Fkb 
+   */
   public function genFkbResponse()
   {
     $fkbReturn = new Fkb;
+
     if ($this->getBoResult() !== null) {
       $fkbReturn->add('fdBoResult', $this->getBoResult());
     }
