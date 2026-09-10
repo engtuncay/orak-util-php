@@ -40,6 +40,7 @@ class FiPdo extends PDO
     
     //dbType null ile MYSQL eşitleniyor
     $dbType??= FiDbTypes::MYSQL;
+    $charset??= 'utf8';
     
     try {
       if ($dbType == FiDbTypes::MYSQL) {
@@ -406,7 +407,6 @@ class FiPdo extends PDO
       $fdrMain->setFkbValue($fkbVal);
       return $fdrMain;
     } catch (PDOException $e) {
-
       $fdrMain->setBoResult(false);
       $fdrMain->setException($e);
       return $fdrMain; //$result;
