@@ -82,7 +82,7 @@ class Fdr
   /**
    * Http isteklerine Response ederken kullanılacak FkbResponse objesini oluşturur.
    * 
-   * FkbResponse objesine dahil edilecek alanlar burada tespit edilir
+   * FkbResponse objesine dahil edilecek alanlar burada tespit edilir.
    * 
    * @return Fkb 
    */
@@ -134,7 +134,7 @@ class Fdr
     return $fkbReturn;
   }
 
-  public function __construct($boResult=null, $message = null)
+  public function __construct($boResult = null, $message = null)
   {
     $this->boResult = $boResult;
     $this->txMessage = $message;
@@ -400,7 +400,7 @@ class Fdr
     return $this->refFiXml;
   }
 
-  public function setRefFiXml(?FiXml $refFiXml) : self
+  public function setRefFiXml(?FiXml $refFiXml): self
   {
     $this->refFiXml = $refFiXml;
     return $this;
