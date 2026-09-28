@@ -88,11 +88,11 @@ class Fkb implements IteratorAggregate
   {
     if ($fkbCol == null) return;
 
-    $txFieldName =  $fkbCol->getFimValue(FimFiCol::fcTxFieldName());
+    $txFieldName =  $fkbCol->getFimVal(FimFiCol::fcTxFieldName());
 
     if (FiString::isEmpty($txFieldName)) return;
 
-    $this->params[$fkbCol->getFimValue(FimFiCol::fcTxFieldName())] = $value;
+    $this->params[$fkbCol->getFimVal(FimFiCol::fcTxFieldName())] = $value;
   }
 
   /**
@@ -184,14 +184,14 @@ class Fkb implements IteratorAggregate
     $this->params = $params;
   }
 
-  public function getValueByFiCol(FiCol $fiCol): mixed
+  public function getFicVal(FiCol $fiCol): mixed
   {
     //FiLog::$log?->debug( json_encode($this->getArr()));
     return $this->getValue($fiCol->fcTxFieldName);
   }
 
   /**
-   * deprecated getValueByFim kullanılacak
+   * deprecated getFimVal kullanılacak
    *
    * @param FiMeta $fiMeta
    * @return mixed
@@ -208,10 +208,10 @@ class Fkb implements IteratorAggregate
     return $this->getValue($fiMeta->ftTxKey);
   }
 
-  public function getValueByFimAsBool(FiMeta $fiMeta): mixed
+  public function getFimVal(FiMeta $fiMeta): mixed
   {
-    //FiLog::$log?->debug(json_encode($this->getArr()));
-    return FicValue::toBool($this->getValue($fiMeta->ftTxKey, null));
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getValue($fiMeta->ftTxKey);
   }
 
   public function getFimAsBool(FiMeta $fiMeta): mixed
@@ -228,24 +228,12 @@ class Fkb implements IteratorAggregate
    */
   public function getFimValue(FiMeta $fiMeta): mixed
   {
-    return $this->getValueByFiMeta($fiMeta);
-  }
-
-  public function getValueByFkc(Fkb $fkcCol): mixed
-  {
-    return $this->getValue($fkcCol->getValueByFiMeta(FimFiCol::fcTxFieldName()));
+    return $this->getFimVal($fiMeta);
   }
 
   public function getFkcVal(Fkb $fkcCol): mixed
   {
-    return $this->getValueByFkc($fkcCol);
-  }
-
-  // Deprecated, use getFcTxFieldName() instead
-  public function getFcFieldName(): mixed
-  {
-    //FiLog::$log?->debug( json_encode($this->getArr()));
-    return $this->getFimValue(FimFiCol::fcTxFieldName());
+    return $this->getValue($fkcCol->getFimVal(FimFiCol::fcTxFieldName()));
   }
 
   public function getFcTxFieldName(): mixed
@@ -296,13 +284,20 @@ class Fkb implements IteratorAggregate
     return new ArrayIterator($this->params);
   }
 
-  public function getValueAsBoolByFiCol(FiCol $fiCol): bool|null
+  public function getFicValAsBool(FiCol $fiCol): bool|null
   {
     if (!FiArray::existKeyByFiCol($fiCol, $this->getArr())) return null;
     $txValue = $this->getArr()[$fiCol->fcTxFieldName];
 
     //if (is_string($txValue)) {
     return FicValue::toBool($txValue);
+  }
+
+  public function getFicValAsInt(FiCol $fiCol): int|null
+  {
+    if (!FiArray::existKeyByFiCol($fiCol, $this->getArr())) return null;
+    $txValue = $this->getArr()[$fiCol->fcTxFieldName];
+    return FicValue::toInt($txValue);
   }
 
   public function has(string $txKey = null): bool
@@ -380,4 +375,38 @@ class Fkb implements IteratorAggregate
 
     return Fkb::bui($arrayLast);
   }
+
+  // Depraceted Methods
+
+    public function getValueByFkc(Fkb $fkcCol): mixed
+  {
+    return $this->getValue($fkcCol->getFimVal(FimFiCol::fcTxFieldName()));
+  }
+
+    public function getValueAsBoolByFiCol(FiCol $fiCol): bool|null
+  {
+    return $this->getFicValAsBool($fiCol);
+  }
+
+  public function getValueByFiCol(FiCol $fiCol): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getValue($fiCol->fcTxFieldName);
+  }
+
+  // Deprecated, use getFcTxFn() instead
+  public function getFcFieldName(): mixed
+  {
+    //FiLog::$log?->debug( json_encode($this->getArr()));
+    return $this->getFimValue(FimFiCol::fcTxFieldName());
+  }
+
+  public function getValueByFimAsBool(FiMeta $fiMeta): mixed
+  {
+    //FiLog::$log?->debug(json_encode($this->getArr()));
+    return FicValue::toBool($this->getValue($fiMeta->ftTxKey, null));
+  }
+
+  // end - Depraceted Methods
+
 }
