@@ -119,4 +119,15 @@ class FiString
     return " AND ";
   }
 
+  /**
+   * 
+   * @param string $txHayStack text will be controlled
+   * @param string $txVal text will be checked
+   * @return bool 
+   */
+  public static function startWith(string $txHayStack, string $txVal)
+	{
+    return str_starts_with($txHayStack,$txVal);
+	}
+
 }
