@@ -14,9 +14,12 @@ class FiCol
 
   /**
    * Alanın başlık açıklaması ( tablo için sütün başlığı , form için label alanı değeri / excelde başlık )
+   * 
+   * Label olarak da kullanılabilir. (txLabel)
    */
   public ?string $fcTxHeader = null;
 
+  // Deprecated
   public ?string $txLabel = null;
 
   /**
