@@ -110,6 +110,13 @@ class FiXmlUtil
     return preg_replace($pattern, $subst, $txXml);
   }
 
+    public static function deActivateAllParamsWitClear(string $txXml): string
+  {
+    $pattern = '/.*\{\{(.*?)\}\}.*\n/';
+    $subst = "";
+    return preg_replace($pattern, $subst, $txXml);
+  }
+
   /**
    * XML içindeki belirli {{key}} placeholder'ını <!--key deactive--> ile değiştirir
    */
